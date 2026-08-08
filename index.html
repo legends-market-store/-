@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوق الأساطير | سوق عالمي آمن لبيع وشراء حسابات الألعاب</title>
+    <meta name="description" content="سوق الأساطير هو المنصة العالمية الأولى والآمنة لتبادل وبيع وشراء حسابات الألعاب الإلكترونية بضمان كامل وثقة 100%.">
+    <meta name="keywords" content="بيع حسابات, شراء حسابات, سوق الأساطير, حسابات ألعاب آمنة, كلاش أوف كلانس, ببجي موبايل">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .modal-overlay {
+            overflow-y: auto;
+            padding: 20px 10px;
+            align-items: flex-start;
+        }
+        .modal-box {
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebarOverlay" class="sidebar-overlay" style="display: none;" onclick="toggleSidebar()"></div>
+
+    <div class="trust-banner" dir="ltr">
+        <div class="ticker-text">
+            🛡️ سوق الأساطير لبيع الحسابات بشكل آمن وموثوق مع ضمان استرداد الأموال وجميع الحقوق محفوظة، شكراً لثقتكم بنا ❤️ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🛡️ سوق الأساطير لبيع الحسابات بشكل آمن وموثوق مع ضمان استرداد الأموال وجميع الحقوق محفوظة، شكراً لثقتكم بنا ❤️
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar" style="right: -300px;">
+        <div class="sidebar-header">
+            <h3>⚙️ القائمة والخدمات</h3>
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" style="cursor: pointer;" onclick="toggleCategorySection('clash'); toggleSidebar();">🔥 أفضل العروض (تاون ماكس)</div>
+            <div id="my-orders-btn-sidebar" class="sidebar-item" style="cursor: pointer; background: rgba(255, 204, 0, 0.08); color: var(--accent-color); border-color: var(--accent-color);" onclick="openOrdersModal(); toggleSidebar();">🛒 طلباتي (مشترياتي)</div>
+            <div class="sidebar-item" style="cursor: pointer; background: rgba(37, 211, 102, 0.1); color: #25D366; border-color: #25D366;" onclick="openSellModal(); toggleSidebar();">💰 أريد أن أبيع حسابي</div>
+            <a href="https://wa.me/963984509908" target="_blank" class="sidebar-item" style="display: block; text-decoration: none;">📞 اتصل بنا (واتساب)</a>
+        </div>
+        <div class="theme-switch-wrapper">
+            <span>☀️ الوضع النهاري / الليلي 🌙</span>
+            <input type="checkbox" id="theme-toggle" onclick="toggleTheme()" style="width: 40px; height: 20px; cursor: pointer;">
+        </div>
+    </div>
+
+    <div id="main-page" class="page active-page">
+        <header>
+            <div class="nav-buttons">
+                <button class="menu-btn" onclick="toggleSidebar()">☰ القائمة</button>
+            </div>
+            <h1 class="main-title">🏆 سوق الأساطير 🏆</h1>
+            <p class="subtitle">بوابتك الآمنة والمباشرة لأقوى الحسابات الرقمية</p>
+        </header>
+
+        <div onclick="openSellModal()" class="sell-now-btn" style="display: block; text-decoration: none; text-align: center; cursor: pointer;">
+            🤝 هل تريد بيع حسابك? اضغط هنا وكن بائعاً معنا!
+        </div>
+
+        <div class="card-container">
+            <div class="login-banner">
+                <div class="login-text" id="user-status-text">🎯 تصفح كـ زائر.. سجل دخولك لتوثيق مشترياتك</div>
+                <div class="login-btn" id="login-nav-btn" style="cursor: pointer;" onclick="handleAuthAction()">👤 تسجيل الدخول</div>
+            </div>
+        </div>
+
+        <div class="categories-grid">
+            <div id="btn-pubg" class="category-card pubg-card active-card" style="cursor: pointer; user-select: none;" onclick="toggleCategorySection('pubg')">
+                <span style="pointer-events: none;">🎮 قسم ببجي موبايل</span>
+            </div>
+            <div id="btn-clash" class="category-card clash-card" style="cursor: pointer; user-select: none;" onclick="toggleCategorySection('clash')">
+                <span style="pointer-events: none;">⚔️ قسم كلاش أوف كلانس</span>
+            </div>
+        </div>
+
+        <div id="pubg-section" class="products-section">
+            <h3 class="section-header-title" style="border-right-color: var(--pubg-color);">🛒 حسابات ببجي المتوفرة حالياً</h3>
+            <div id="pubg-products-container">
+                <!-- جاري جلب الحسابات الحقيقية فقط من الفايربيس عبر app.js -->
+            </div>
+        </div>
+
+        <div id="clash-section" class="products-section" style="display: none;">
+            <h3 class="section-header-title" style="border-right-color: var(--accent-color);">🛒 حسابات كلاش أوف كلانس</h3>
+            <div id="clash-products-container">
+                <!-- جاري جلب الحسابات الحقيقية فقط من الفايربيس عبر app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول والتسجيل -->
+    <div id="auth-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <button class="close-modal" style="cursor: pointer;" onclick="closeAuthModal()">&times;</button>
+            
+            <div id="login-form" class="auth-form active">
+                <div class="modal-title">🔐 تسجيل الدخول للمتجر</div>
+                <div class="input-group">
+                    <input type="email" id="login-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-pass" class="modal-input-field" placeholder="كلمة المرور" required>
+                </div>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="login-btn-submit" onclick="submitLogin()">دخول آمن 🚀</button>
+                <div class="switch-text">
+                    أليس لديك حساب؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('register')">سجل الآن مجاناً</span>
+                </div>
+            </div>
+
+            <div id="register-form" class="auth-form" style="display: none;">
+                <div class="modal-title">✨ إنشاء حساب أسطوري جديد</div>
+                <div class="input-group">
+                    <input type="text" id="reg-name" class="modal-input-field" placeholder="الاسم الكامل" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="reg-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="reg-pass" class="modal-input-field" placeholder="كلمة المرور" required>
+                </div>
+                <button class="modal-submit-btn" style="background-color: var(--pubg-color); color: #000; cursor: pointer;" id="reg-btn-submit" onclick="submitRegister()">تأكيد التسجيل والانضمام ⚔️</button>
+                <div class="switch-text">
+                    لديك حساب بالفعل؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">سجل دخولك</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة نموذج بيع الحساب -->
+    <div id="sell-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 480px;">
+            <button class="close-modal" style="cursor: pointer;" onclick="closeSellModal()">&times;</button>
+            <div class="modal-title">💰 إرسال حسابك للبيع بالمتجر</div>
+            <p style="text-align: center; margin-bottom: 12px; font-size: 13px; opacity: 0.85;">ادخل تفاصيل حسابك بدقة وسيتم مراجعته ونشره فوراً في المتجر!</p>
+
+            <form id="sell-account-form" onsubmit="event.preventDefault(); handleSellSubmit();">
+                <div class="admin-form-group">
+                    <label>اختر اللعبة:</label>
+                    <select id="sell-game-type" class="modal-input-field" onchange="toggleSellGameFields()">
+                        <option value="كلاش أوف كلانس">⚔️ كلاش أوف كلانس</option>
+                        <option value="ببجي موبايل">🎮 ببجي موبايل</option>
+                    </select>
+                </div>
+
+                <!-- حقول خاصة بكلاش أوف كلانس -->
+                <div id="sell-clash-fields">
+                    <div class="admin-form-group">
+                        <label>اسم القرية / الحساب:</label>
+                        <input type="text" id="sell-clash-name" class="modal-input-field" placeholder="مثال: Legend_Hero">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>مستوى البيت (التاون هول):</label>
+                        <input type="number" id="sell-clash-th" class="modal-input-field" placeholder="مثال: 15">
+                    </div>
+                </div>
+
+                <!-- حقول خاصة بببجي موبايل -->
+                <div id="sell-pubg-fields" style="display: none;">
+                    <div class="admin-form-group">
+                        <label>مستوى/لفل الحساب:</label>
+                        <input type="number" id="sell-pubg-level" class="modal-input-field" placeholder="مثال: 72">
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>السعر المطلوب ($ دولار):</label>
+                    <input type="number" id="sell-price" class="modal-input-field" placeholder="مثال: 50" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>البريد الإلكتروني الخاص بالحساب (السري):</label>
+                    <input type="email" id="sell-email" class="modal-input-field" placeholder="example@gmail.com" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>كلمة سر الحساب (السرية):</label>
+                    <input type="text" id="sell-pass" class="modal-input-field" placeholder="Password123" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label>صور الحساب (اختر من المعرض حتى 3 صور):</label>
+                    <input type="file" id="sell-img1" accept="image/*" class="modal-input-field" style="margin-bottom: 5px;">
+                    <input type="file" id="sell-img2" accept="image/*" class="modal-input-field" style="margin-bottom: 5px;">
+                    <input type="file" id="sell-img3" accept="image/*" class="modal-input-field">
+                </div>
+
+                <!-- تنبيه وملاحظة الفحص الرسمية -->
+                <div class="guide-alert" style="margin-top: 12px; font-size: 13px; color: #ffcc00; background: rgba(255, 204, 0, 0.12); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(255, 204, 0, 0.3);">
+                    ⚠️ <b>ملاحظة مهمة:</b> سيتم فحص وجود حسابك والتأكد منه وعرضه بالمتجر مباشرة إن كان السعر مناسباً!
+                </div>
+
+                <button type="submit" id="sell-submit-btn" class="modal-submit-btn" style="margin-top: 15px; cursor: pointer;">إرسال الحساب للمراجعة والبيع 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة الدفع -->
+    <div id="payment-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <button class="close-modal" style="cursor: pointer;" onclick="closePaymentModal()">&times;</button>
+            <div class="modal-title" id="payment-modal-title">💸 إتمام الدفع الآمن</div>
+            
+            <!-- إشعار الضمان والأمان الجديد -->
+            <div style="background: rgba(37, 211, 102, 0.1); border: 1px solid #25D366; border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; font-size: 12px; color: #25D366;">
+                🛡️ <b>أموالك في أمان تام:</b> يتم الدفع عبر نظام وسيط محمى، ولا يتم تسليم المبلغ للبائع إلا بعد استلامك للحساب وتأكيده 100%.
+            </div>
+
+            <p style="text-align: center; margin-bottom: 10px; font-size: 14px; opacity: 0.9;">يرجى تحويل مبلغ الحساب أولاً، ثم املأ البيانات بالأسفل:</p>
+
+            <div class="admin-form-group">
+                <label>اختر وسيلة التحويل التي دفعت بها:</label>
+                <select id="payment-method" onchange="updateWalletDisplay()">
+                    <option value="شام كاش (Sham Cash)">شام كاش (Sham Cash)</option>
+                    <option value="بينانس (Binance Pay)">بينانس (Binance Pay)</option>
+                </select>
+            </div>
+
+            <div id="wallet-display-box" class="wallet-details"></div>
+
+            <div class="admin-form-group" style="margin-top:15px;">
+                <label>رقم عملية التحويل / كود المعاملة المرسل إلينا:</label>
+                <input type="text" id="payment-ref-id" class="modal-input-field" placeholder="مثال: TxnID1029384" required>
+            </div>
+
+            <button class="modal-submit-btn" style="cursor: pointer;" id="submit-payment-btn" onclick="submitPayment()">إرسال وتأكيد الطلب ⚡</button>
+        </div>
+    </div>
+
+    <!-- نافذة سلة المشتريات والطلبات -->
+    <div id="orders-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 420px;">
+            <button class="close-modal" style="cursor: pointer;" onclick="closeOrdersModal()">&times;</button>
+            <div class="modal-title">🛒 سلة مشترياتي وحساباتي</div>
+            <div class="guide-alert">💡 دليل الأمان: طلباتك المحولة حديثاً قيد المراجعة، بمجرد التحقق سنرسل الحساب هنا فوراً!</div>
+            <div id="orders-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-top: 15px;"></div>
+            <button class="modal-submit-btn" style="margin-top: 15px; background: #25D366; color: white; cursor: pointer;" onclick="window.open('https://wa.me/963984509908', '_blank')">💬 تواصل لتسريع التسليم</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSellGameFields() {
+            const gameType = document.getElementById('sell-game-type').value;
+            const clashFields = document.getElementById('sell-clash-fields');
+            const pubgFields = document.getElementById('sell-pubg-fields');
+
+            if (gameType === 'ببجي موبايل') {
+                if (clashFields) clashFields.style.display = 'none';
+                if (pubgFields) pubgFields.style.display = 'block';
+            } else {
+                if (clashFields) clashFields.style.display = 'block';
+                if (pubgFields) pubgFields.style.display = 'none';
+            }
+        }
+
+        function openSellModal() {
+            const modal = document.getElementById('sell-modal');
+            if(modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            toggleSellGameFields();
+        }
+
+        function closeSellModal() {
+            const modal = document.getElementById('sell-modal');
+            if(modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // تحويل صورة الاستوديو إلى نص Base64 بأمان
+        function convertFileToBase64(fileInput) {
+            return new Promise((resolve) => {
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result || '');
+                    reader.onerror = () => resolve('');
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    resolve('');
+                }
+            });
+        }
+
+        async function handleSellSubmit() {
+            const category = document.getElementById('sell-game-type').value;
+            const price = document.getElementById('sell-price').value.trim();
+            const email = document.getElementById('sell-email').value.trim();
+            const pass = document.getElementById('sell-pass').value.trim();
+
+            let title = "";
+            if (category === 'ببجي موبايل') {
+                const lvl = document.getElementById('sell-pubg-level').value.trim();
+                title = `حساب ببجي لفل ${lvl || 'غير محدد'}`;
+            } else {
+                const name = document.getElementById('sell-clash-name').value.trim();
+                const th = document.getElementById('sell-clash-th').value.trim();
+                title = `${name || 'قرية كلاش'} (تاون ${th || 'غير محدد'})`;
+            }
+
+            if (!price || !email || !pass) {
+                alert("يرجى ملء كافة البيانات الأساسية للحساب قبل الإرسال.");
+                return;
+            }
+
+            const btn = document.getElementById('sell-submit-btn');
+            btn.innerText = "جاري رفع الصور والإرسال...";
+            btn.disabled = true;
+
+            try {
+                // معالجة الصور الثلاث مع ضمان عدم حدوث أخطاء
+                const img1 = await convertFileToBase64(document.getElementById('sell-img1'));
+                const img2 = await convertFileToBase64(document.getElementById('sell-img2'));
+                const img3 = await convertFileToBase64(document.getElementById('sell-img3'));
+
+                // مصفوفة تجمع كل الصور المرفوعة لاستعراضها بسلاسة
+                const imagesArray = [img1, img2, img3].filter(img => img !== '');
+
+                const orderPayload = {
+                    category: category,
+                    title: title,
+                    price: price,
+                    email: email,
+                    pass: pass,
+                    img1: img1 || (imagesArray[0] || ''),
+                    img2: img2 || '',
+                    img3: img3 || '',
+                    images: imagesArray,
+                    status: 'pending',
+                    timestamp: Date.now()
+                };
+
+                await firebase.database().ref('sell_requests').push(orderPayload);
+                
+                alert("تم إرسال طلبك بنجاح! 🚀 سيتم فحص الحساب ونشره في المتجر فوراً عند الموافقة.");
+                btn.innerText = "إرسال الحساب للمراجعة والبيع 🚀";
+                btn.disabled = false;
+                document.getElementById('sell-account-form').reset();
+                closeSellModal();
+
+            } catch (err) {
+                alert("حدث خطأ أثناء الإرسال: " + err.message);
+                btn.innerText = "إرسال الحساب للمراجعة والبيع 🚀";
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+                </html>
+    

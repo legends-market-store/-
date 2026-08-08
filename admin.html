@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المدير ضياء - سوق الأساطير</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0b0c10; color: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .admin-page { display: none; width: 100%; max-width: 450px; }
+        .active { display: block; }
+        .login-box, .dashboard-box { border: 2px solid #ffcc00; border-radius: 20px; padding: 25px 20px; background: #0f1013; text-align: center; box-shadow: 0 0 20px rgba(255, 204, 0, 0.15); }
+        .login-title, .dashboard-title { color: #ffcc00; font-size: 22px; font-weight: bold; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .input-field, .select-field { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #222222; background: #1c1d22; color: #ffffff; font-size: 15px; margin-bottom: 18px; text-align: right; outline: none; }
+        .input-field { text-align: center; }
+        .input-field::placeholder { color: #555555; }
+        .select-field { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23777' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 15px center; padding-left: 40px; }
+        .submit-btn { width: 100%; padding: 16px; background: #ffcc00; color: #000000; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2); transition: transform 0.1s; }
+        .submit-btn:active { transform: scale(0.98); }
+        .separator { border: none; height: 1px; background: #2a2a2a; margin: 20px 0; }
+        .section-title { font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .pending { color: #2ec4b6; }
+        .inventory { color: #00d2ff; }
+        .info-text { color: #888888; font-size: 14px; margin-bottom: 20px; }
+        .inventory-list { display: flex; flex-direction: column; gap: 12px; text-align: right; }
+        .inventory-card { background: #1c1d22; border: 1px solid #2a2a2a; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .inventory-card-title { font-size: 14px; font-weight: bold; color: #ffffff; }
+        .inventory-card-price { font-size: 13px; color: #ffcc00; }
+        .inventory-card-actions { display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+        .action-btn { flex: 1; padding: 10px 8px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .edit-btn, .confirm-pay-btn { background: #2ec4b6; color: #000; }
+        .delete-btn, .reject-pay-btn { background: #ff4545; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="admin-page active">
+        <div class="login-box">
+            <div class="login-title">🔐 بوابة دخول المدير ضياء الآمنة</div>
+            <input type="email" id="username" class="input-field" placeholder="البريد الإلكتروني للأدمن">
+            <input type="password" id="password" class="input-field" placeholder="كلمة المرور">
+            <button class="submit-btn" onclick="login()">دخول آمن بالنظام</button>
+        </div>
+    </div>
+
+    <div id="dashboard-page" class="admin-page">
+        <div class="dashboard-box">
+            
+            <div id="form-heading" class="dashboard-title">🚀 إضافة حساب جديد للمتجر</div>
+            
+            <select id="category" class="select-field">
+                <option value="ببجي موبايل">🎮 قسم ببجي موبايل</option>
+                <option value="كلاش أوف كلانس">⚔️ قسم كلاش أوف كلانس</option>
+            </select>
+            
+            <input type="text" id="acc-title" class="input-field" placeholder="اسم الحساب (مثال: تاون 10 شبه مكس)" style="text-align: right;">
+            <input type="text" id="acc-price" class="input-field" placeholder="السعر (مثال: 45)" style="text-align: right;">
+            
+            <input type="text" id="acc-img" class="input-field" placeholder="🖼️ رابط الصورة الأساسية (المباشر)" style="text-align: right;">
+            <input type="text" id="acc-img2" class="input-field" placeholder="🖼️ رابط الصورة الثانية (اختياري)" style="text-align: right;">
+            <input type="text" id="acc-img3" class="input-field" placeholder="🖼️ رابط الصورة الثالثة (اختياري)" style="text-align: right;">
+            <input type="text" id="acc-img4" class="input-field" placeholder="🖼️ رابط الصورة الرابعة (اختياري)" style="text-align: right;">
+            
+            <input type="text" id="acc-secret" class="input-field" placeholder="🔒 بيانات الحساب السرية (الإيميل والرمز للزبون)" style="text-align: right; border: 1.5px dashed #ffcc00;">
+            
+            <button id="main-action-btn" class="submit-btn" onclick="handlePublishOrUpdate()">نشر الحساب فوراً</button>
+            <button id="cancel-edit-btn" class="submit-btn" style="background: #888; margin-top: 10px; display: none;" onclick="cancelEditMode()">إلغاء التعديل</button>
+            
+            <hr class="separator">
+
+            <div class="section-title" style="color: #25D366;">📥 طلبات بيع الحسابات (من البائعين)</div>
+            <div id="sell-requests-container" class="inventory-list">
+                <div class="info-text">جاري جلب طلبات البيع...</div>
+            </div>
+            
+            <hr class="separator">
+            
+            <div class="section-title pending">📥 طلبات الشراء المعلقة (شام كاش / بينانس)</div>
+            <div id="pending-container" class="inventory-list">
+                <div class="info-text">جاري جلب الطلبات من الفايربيس...</div>
+            </div>
+            
+            <hr class="separator">
+            
+            <div class="section-title inventory">📦 قائمة بضاعتك الحالية بالمتجر</div>
+            <div id="inventory-container" class="inventory-list">
+                <div class="info-text">جاري جلب البضائع من الفايربيس...</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- استدعاء ملف البرمجة -->
+    <script src="admin.js"></script>
+</body>
+</html>

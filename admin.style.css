@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Tajawal', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #0b0c10;
+    color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.admin-page {
+    display: none;
+    width: 100%;
+    max-width: 400px;
+}
+
+.active {
+    display: block;
+}
+
+/* تصميم صفحة تسجيل الدخول */
+.login-box {
+    border: 2px solid #ffcc00;
+    border-radius: 20px;
+    padding: 35px 20px;
+    background: #0f1013;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.15);
+}
+
+.login-title {
+    color: #ffcc00;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #222222;
+    background: #1c1d22;
+    color: #ffffff;
+    font-size: 15px;
+    margin-bottom: 18px;
+    text-align: center;
+    outline: none;
+}
+
+.input-field::placeholder {
+    color: #555555;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: #ffcc00;
+    color: #000000;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+    transition: transform 0.1s;
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+/* تصميم لوحة التحكم */
+.dashboard-box {
+    border: 2px solid #ffcc00;
+    border-radius: 20px;
+    padding: 25px 20px;
+    background: #0f1013;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+}
+
+.dashboard-title {
+    color: #ffcc00;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.select-field {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #222222;
+    background: #1c1d22;
+    color: #ffffff;
+    font-size: 15px;
+    margin-bottom: 18px;
+    text-align: right;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23777' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 15px center;
+    padding-left: 40px;
+}
+
+.separator {
+    border: none;
+    height: 1px;
+    background: #2a2a2a;
+    margin: 20px 0;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.pending {
+    color: #2ec4b6;
+}
+
+.inventory {
+    color: #00d2ff;
+}
+
+.info-text {
+    color: #888888;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* بطاقات مبيعات معلقة وبضاعة */
+.inventory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: right;
+}
+
+.inventory-card {
+    background: #1c1d22;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inventory-card-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.inventory-card-price {
+    font-size: 13px;
+    color: #ffcc00;
+}
+
+.inventory-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.edit-btn {
+    background: #2ec4b6;
+    color: #000;
+}
+
+.delete-btn {
+    background: #ff4545;
+    color: #fff;
+}
+
+.confirm-pay-btn {
+    background: #2ec4b6;
+    color: #000;
+}
+
+.reject-pay-btn {
+    background: #ff4545;
+    color: #fff;
+}
