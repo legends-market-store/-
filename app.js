@@ -1,9 +1,7 @@
-// app.js - سوق الأساطير (نسخة الزبون الخفيفة والمصلحة بدقة)
-
 const firebaseConfig = {
     apiKey: "AIzaSyDNPdxQMMPUO1Gn-hQztcy0GEGcmA22PWs",
     authDomain: "legends-market-446ca.firebaseapp.com",
-    databaseURL: "https://legends-market-446ca-default-rtdb.firebaseio.com", // مضافة ومحفوظة مية بالمية
+    databaseURL: "https://legends-market-446ca-default-rtdb.firebaseio.com",
     projectId: "legends-market-446ca",
     storageBucket: "legends-market-446ca.firebasestorage.app",
     messagingSenderId: "981095007194",
@@ -11,28 +9,24 @@ const firebaseConfig = {
     measurementId: "G-6ZFRFPDXYS"
 };
 
-// تهيئة فايربيس بالطريقة التقليدية
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
 let currentUser = null;
 let pendingAccountToBuy = null;
+window.siteProducts = {}; // مصفوفة لحفظ البيانات لمعرض الصور
 
-// الأكواد والمحافظ الصحيحة والدقيقة
 const WALLETS = {
     "شام كاش (Sham Cash)": "ed5ecbd40a49c60a90f59a7c0ccb72f5",
     "بينانس (Binance Pay)": "TMbdBtgbuxH2bjg4uzRkJriSKeZZq5AdFU"
 };
-
-// --- دالات الواجهة الأساسية والتبديل ---
 
 window.toggleCategorySection = function(category) {
     const btnPubg = document.getElementById('btn-pubg');
     const btnClash = document.getElementById('btn-clash');
     const secPubg = document.getElementById('pubg-section');
     const secClash = document.getElementById('clash-section');
-
     if(btnPubg) btnPubg.classList.remove('active-card');
     if(btnClash) btnClash.classList.remove('active-card');
     if(secPubg) { secPubg.style.display = 'none'; }
@@ -50,19 +44,13 @@ window.toggleCategorySection = function(category) {
 window.updateWalletDisplay = function() {
     const methodEl = document.getElementById('payment-method');
     const displayBox = document.getElementById('wallet-display-box');
-    if (methodEl && displayBox) {
-        const method = methodEl.value;
-        displayBox.innerText = WALLETS[method] || "";
-    }
+    if (methodEl && displayBox) { displayBox.innerText = WALLETS[methodEl.value] || ""; }
 };
 
 window.toggleTheme = function() {
     const isLight = document.getElementById('theme-toggle').checked;
-    if (isLight) {
-        document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-    }
+    if (isLight) { document.documentElement.setAttribute('data-theme', 'light'); } 
+    else { document.documentElement.removeAttribute('data-theme'); }
 };
 
 window.toggleSidebar = function() {
@@ -70,144 +58,97 @@ window.toggleSidebar = function() {
     const overlay = document.getElementById('sidebarOverlay');
     if(sidebar && overlay) {
         if(sidebar.style.right === "0px") {
-            sidebar.style.right = "-300px";
-            overlay.style.display = 'none';
+            sidebar.style.right = "-300px"; overlay.style.display = 'none';
         } else {
-            sidebar.style.right = "0px";
-            overlay.style.display = 'block';
+            sidebar.style.right = "0px"; overlay.style.display = 'block';
         }
     }
 };
 
-window.openAuthModal = function() {
-    const modal = document.getElementById('auth-modal');
-    if(modal) modal.style.display = 'flex';
-    window.switchForm('login');
-};
-
-window.closeAuthModal = function() {
-    const modal = document.getElementById('auth-modal');
-    if(modal) modal.style.display = 'none';
-};
-
-window.closePaymentModal = function() {
-    const modal = document.getElementById('payment-modal');
-    if(modal) modal.style.display = 'none';
-};
+window.openAuthModal = function() { document.getElementById('auth-modal').style.display = 'flex'; window.switchForm('login'); };
+window.closeAuthModal = function() { document.getElementById('auth-modal').style.display = 'none'; };
+window.closePaymentModal = function() { document.getElementById('payment-modal').style.display = 'none'; };
 
 window.openOrdersModal = function() {
-    if (!currentUser) {
-        alert("سجل دخولك أولاً لرؤية سلة مشترياتك!");
-        window.openAuthModal();
-        return;
-    }
-    const modal = document.getElementById('orders-modal');
-    if(modal) modal.style.display = 'flex';
+    if (!currentUser) { alert("سجل دخولك أولاً لرؤية سلة مشترياتك ومبيعاتك!"); window.openAuthModal(); return; }
+    
+    // إخفاء الإشعار عند الدخول للقائمة (تحديث العدد المقروء)
+    const completed = document.querySelectorAll('.status-completed, .status-rejected').length;
+    localStorage.setItem('seenItems_' + currentUser.uid, completed);
+    updateBadge(completed); // تصفير الشارة
+
+    document.getElementById('orders-modal').style.display = 'flex';
 };
 
-window.closeOrdersModal = function() {
-    const modal = document.getElementById('orders-modal');
-    if(modal) modal.style.display = 'none';
-};
+window.closeOrdersModal = function() { document.getElementById('orders-modal').style.display = 'none'; };
 
 window.switchForm = function(type) {
     const loginF = document.getElementById('login-form');
     const registerF = document.getElementById('register-form');
-    if(loginF && registerF) {
-        if (type === 'login') {
-            loginF.style.display = 'block';
-            registerF.style.display = 'none';
-        } else {
-            loginF.style.display = 'none';
-            registerF.style.display = 'block';
-        }
-    }
+    if (type === 'login') { loginF.style.display = 'block'; registerF.style.display = 'none'; } 
+    else { loginF.style.display = 'none'; registerF.style.display = 'block'; }
 };
 
-// التحكم بزر الخروج والدخول
 window.handleAuthAction = function() {
-    if (currentUser) {
-        if (confirm("هل تريد تسجيل الخروج فعلاً يا بطل؟")) {
-            auth.signOut();
-        }
-    } else {
-        window.openAuthModal();
-    }
+    if (currentUser) { if (confirm("هل تريد تسجيل الخروج فعلاً يا بطل؟")) { auth.signOut(); } } 
+    else { window.openAuthModal(); }
 };
 
-// عند النقر على شراء الحساب
 window.buyAccount = function(title, price, category, secretInfo = "") {
-    if (!currentUser) {
-        alert("يرجى تسجيل الدخول أولاً لتثبيت ومتابعة طلبياتك!");
-        window.openAuthModal();
-        return;
-    }
+    if (!currentUser) { alert("يرجى تسجيل الدخول أولاً لمتابعة طلبياتك!"); window.openAuthModal(); return; }
     pendingAccountToBuy = { title, price, category, secretInfo };
-    const payTitle = document.getElementById('payment-modal-title');
-    const payRef = document.getElementById('payment-ref-id');
-    const payModal = document.getElementById('payment-modal');
-    
-    if(payTitle) payTitle.innerText = `💸 دفع ${price}$ لـ ${title}`;
-    if(payRef) payRef.value = '';
-    if(payModal) payModal.style.display = 'flex';
+    document.getElementById('payment-modal-title').innerText = `💸 دفع ${price}$ لـ ${title}`;
+    document.getElementById('payment-ref-id').value = '';
+    document.getElementById('payment-modal').style.display = 'flex';
     window.updateWalletDisplay();
 };
 
-// --- جلب المنتجات المضافة ديناميكياً من الفايربيس (تم إصلاح جلب وعرض الصور الأربعة وربطها بالمعرض بدقة) ---
+// --- معرض الصور الذكي بديل لـ img.html ---
+window.openGallery = function(prodId) {
+    const prod = window.siteProducts[prodId];
+    if(!prod) return;
+    const images = [prod.img, prod.img2, prod.img3, prod.img4].filter(i => i && i.trim() !== '');
+    if(images.length === 0) return;
+
+    const modal = document.getElementById('gallery-modal');
+    const mainImg = document.getElementById('gallery-main-img');
+    const thumbs = document.getElementById('gallery-thumbs');
+    
+    mainImg.src = images[0];
+    thumbs.innerHTML = '';
+    
+    images.forEach(src => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.style.width = '60px'; thumb.style.height = '60px'; thumb.style.objectFit = 'cover';
+        thumb.style.borderRadius = '8px'; thumb.style.cursor = 'pointer'; thumb.style.border = '2px solid transparent';
+        thumb.onclick = () => { mainImg.src = src; };
+        thumbs.appendChild(thumb);
+    });
+    if(modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+};
+
+window.closeGallery = function() {
+    document.getElementById('gallery-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+};
+
 function listenToProducts() {
     db.ref('products').on('value', (snapshot) => {
         const data = snapshot.val();
         const pubgContainer = document.getElementById('pubg-products-container');
         const clashContainer = document.getElementById('clash-products-container');
+        if(pubgContainer) pubgContainer.innerHTML = '';
+        if(clashContainer) clashContainer.innerHTML = '';
 
-        // تفريغ الحاويات وعرض الحسابات الإفتراضية مع تمكين رابط المعرض لها كاحتياط
-        if(pubgContainer) {
-            const pubgStaticImgPage = `img.html?img1=${encodeURIComponent('https://via.placeholder.com/450x200')}`;
-            pubgContainer.innerHTML = `
-                <div class="product-card">
-                    <a href="${pubgStaticImgPage}" target="_self" style="display:block; text-decoration:none;">
-                        <img class="product-img" src="https://via.placeholder.com/450x200" alt="ببجي" title="اضغط لمشاهدة صور الحساب كاملة">
-                    </a>
-                    <div class="product-details">
-                        <div class="product-title">حساب ببجي مشحون كونكر وسكنات أسطورية</div>
-                        <div class="product-price">50 $</div>
-                        <button class="buy-btn" style="background-color: var(--pubg-color); cursor: pointer;" onclick="buyAccount('حساب ببجي كونكر موسم 14', '50', 'ببجي موبايل', 'Email: pubg_conqueror@mail.com | Pass: Pubg1234')">
-                            🛒 شراء آمن وفوري ⚡
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        if(clashContainer) {
-            const clashStaticImgPage = `img.html?img1=${encodeURIComponent('https://via.placeholder.com/450x200')}`;
-            clashContainer.innerHTML = `
-                <div class="product-card" id="best-clash-offer">
-                    <a href="${clashStaticImgPage}" target="_self" style="display:block; text-decoration:none;">
-                        <img class="product-img" src="https://via.placeholder.com/450x200" alt="كلاش" title="اضغط لمشاهدة صور الحساب كاملة">
-                    </a>
-                    <div class="product-details">
-                        <div class="product-title">🔥 أعلى تاون (Town Hall 16 Max) بأقل سعر في الموقع</div>
-                        <div class="product-price">65 $</div>
-                        <button class="buy-btn" style="cursor: pointer;" onclick="buyAccount('تاون هول 16 ماكس أسطوري', '65', 'كلاش أوف كلانس', 'Supercell ID: clash_th16@mail.com | Code Sent on Login')">
-                            🛒 شراء آمن وفوري ⚡
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // جلب بضاعتك الحقيقية المرفوعة من الفايربيس وإظهار صورها الحقيقية الأربعة وتفعيل المعرض لها
         if (data) {
             for (let id in data) {
                 const prod = data[id];
-                
-                // تجهيز رابط صفحة معرض الصور وتمرير الروابط الأربعة لـ img.html
-                const imgPageUrl = `img.html?img1=${encodeURIComponent(prod.img || '')}&img2=${encodeURIComponent(prod.img2 || '')}&img3=${encodeURIComponent(prod.img3 || '')}&img4=${encodeURIComponent(prod.img4 || '')}`;
-                
+                window.siteProducts[id] = prod; // حفظ البيانات للمعرض
+
                 const cardHTML = `
                     <div class="product-card">
-                        <a href="${imgPageUrl}" target="_self" style="display: block; text-decoration: none;">
+                        <a href="javascript:void(0)" onclick="openGallery('${id}')" style="display: block; text-decoration: none;">
                             <img class="product-img" src="${prod.img || 'https://via.placeholder.com/450x200'}" alt="${prod.category}" title="اضغط لمشاهدة صور الحساب كاملة">
                         </a>
                         <div class="product-details">
@@ -219,135 +160,153 @@ function listenToProducts() {
                         </div>
                     </div>
                 `;
-
-                if (prod.category === 'ببجي موبايل' && pubgContainer) {
-                    pubgContainer.innerHTML += cardHTML;
-                } else if (prod.category === 'كلاش أوف كلانس' && clashContainer) {
-                    clashContainer.innerHTML += cardHTML;
-                }
+                if (prod.category === 'ببجي موبايل' && pubgContainer) pubgContainer.innerHTML += cardHTML;
+                else if (prod.category === 'كلاش أوف كلانس' && clashContainer) clashContainer.innerHTML += cardHTML;
             }
         }
     });
 }
 
-// --- إدارة حالة المستخدم وجلب المشتريات ---
 auth.onAuthStateChanged((user) => {
     const statusText = document.getElementById('user-status-text');
     const navBtn = document.getElementById('login-nav-btn');
-    const ordersContainer = document.getElementById('orders-container');
-
     if (user) {
         currentUser = user;
         if(statusText) statusText.innerText = `👤 متصل بـ: ${user.email}`;
-        
-        if(navBtn) {
-            navBtn.innerText = "🚪 تسجيل الخروج";
-            navBtn.style.backgroundColor = "#ff4545";
-            navBtn.style.color = "#fff";
-        }
-        listenToOrders();
+        if(navBtn) { navBtn.innerText = "🚪 تسجيل الخروج"; navBtn.style.backgroundColor = "#ff4545"; navBtn.style.color = "#fff"; }
+        listenToUserDashboard();
     } else {
         currentUser = null;
         if(statusText) statusText.innerText = `🎯 تصفح كـ زائر.. سجل دخولك لتوثيق مشترياتك`;
-        
-        if(navBtn) {
-            navBtn.innerText = "👤 تسجيل الدخول";
-            navBtn.style.backgroundColor = "var(--accent-color)";
-            navBtn.style.color = "#000";
-        }
-        if(ordersContainer) ordersContainer.innerHTML = `<p style="text-align:center;font-size:13px;opacity:0.7;">لا يوجد طلبات حتى الآن</p>`;
+        if(navBtn) { navBtn.innerText = "👤 تسجيل الدخول"; navBtn.style.backgroundColor = "var(--accent-color)"; navBtn.style.color = "#000"; }
+        document.getElementById('orders-container').innerHTML = `<p style="text-align:center;font-size:13px;opacity:0.7;">لا يوجد طلبات حتى الآن</p>`;
+        updateBadge(0); // إخفاء الإشعار
     }
 });
 
-function listenToOrders() {
+function listenToUserDashboard() {
+    if (!currentUser) return;
+    
+    let userItems = [];
+    let completedItemsCount = 0;
+
+    // جلب المشتريات
     db.ref('orders').on('value', (snapshot) => {
         const data = snapshot.val();
-        const container = document.getElementById('orders-container');
-        if(!container) return;
-        container.innerHTML = '';
-
-        if (!currentUser) return;
-
-        const myOrders = [];
-        for (let id in data) {
-            if (data[id].userEmail === currentUser.email) {
-                myOrders.push(data[id]);
+        userItems = userItems.filter(item => item.type !== 'order'); 
+        if (data) {
+            for (let id in data) {
+                if (data[id].userEmail === currentUser.email) {
+                    userItems.push({ ...data[id], id, type: 'order', timestamp: data[id].timestamp || 0 });
+                    if(data[id].status !== 'pending') completedItemsCount++;
+                }
             }
         }
+        renderDashboard(userItems, completedItemsCount);
+    });
 
-        if(myOrders.length === 0) {
-            container.innerHTML = `<p style="text-align:center;font-size:13px;opacity:0.7;">لا يوجد طلبات حتى الآن</p>`;
-            return;
-        }
-
-        myOrders.reverse().forEach(order => {
-            let statusText = 'قيد التحقق من الدفع ⏳';
-            let statusClass = 'status-pending';
-            let extraDetails = '';
-
-            if (order.status === 'completed') {
-                statusText = 'تم تسليم الحساب بنجاح ✅';
-                statusClass = 'status-completed';
-                extraDetails = `<div style="background: rgba(46, 196, 182, 0.1); border: 1.5px solid var(--pubg-color); padding: 10px; border-radius: 8px; margin-top: 8px; font-weight: bold; color: var(--text-color); font-size:13px; text-align: center;">🗝️ معلومات الحساب المستلم:<br><span style="color:#fff; font-family: monospace; word-break: break-all;">${order.accountInfo}</span></div>`;
-            } else if (order.status === 'rejected') {
-                statusText = 'مرفوض بسبب عدم الدفع ❌';
-                statusClass = 'status-rejected';
-                extraDetails = `<p style="font-size: 12px; color: #ff4545; margin-top: 5px; font-weight: bold;">🚫 نأسف، لم نتمكن من مطابقة رقم العملية المالي.</p>`;
+    // جلب المبيعات الخاصة بالزبون
+    db.ref('sell_requests').on('value', (snapshot) => {
+        const data = snapshot.val();
+        userItems = userItems.filter(item => item.type !== 'sell'); 
+        if (data) {
+            for (let id in data) {
+                if (data[id].userEmail === currentUser.email) {
+                    userItems.push({ ...data[id], id, type: 'sell', timestamp: data[id].timestamp || 0 });
+                    if(data[id].status !== 'pending') completedItemsCount++;
+                }
             }
-            
-            container.innerHTML += `
-                <div class="order-item">
-                    <div class="order-header">
-                        <span>${order.title}</span>
-                        <span class="order-status ${statusClass}">${statusText}</span>
-                    </div>
-                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 2px;">القسم: ${order.category}</p>
-                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 2px;">طريقة الدفع: ${order.method}</p>
-                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 5px;">رقم المعاملة: <span style="color: var(--accent-color); font-weight: bold;">${order.refId}</span></p>
-                    <p style="font-size: 14px; color: var(--accent-color); font-weight: bold;">المبلغ: ${order.price}$</p>
-                    ${extraDetails}
-                </div>
-            `;
-        });
+        }
+        renderDashboard(userItems, completedItemsCount);
     });
 }
 
-// دالات تسجيل الدخول وإنشاء الحساب
+function renderDashboard(items, completedCount) {
+    items.sort((a, b) => b.timestamp - a.timestamp); // الأحدث أولاً
+    const container = document.getElementById('orders-container');
+    if(!container) return;
+    container.innerHTML = '';
+
+    if(items.length === 0) {
+        container.innerHTML = `<p style="text-align:center;font-size:13px;opacity:0.7;">لا يوجد طلبات شراء أو بيع حتى الآن</p>`;
+        updateBadge(completedCount); return;
+    }
+
+    items.forEach(item => {
+        if (item.type === 'order') {
+            let statusText = 'قيد التحقق من الدفع ⏳'; let statusClass = 'status-pending'; let extraDetails = '';
+            if (item.status === 'completed') {
+                statusText = 'تم تسليم الحساب بنجاح ✅'; statusClass = 'status-completed';
+                extraDetails = `<div style="background: rgba(46, 196, 182, 0.1); border: 1.5px solid var(--pubg-color); padding: 10px; border-radius: 8px; margin-top: 8px; font-weight: bold; color: var(--text-color); font-size:13px; text-align: center;">🗝️ معلومات الحساب المستلم:<br><span style="color:#fff; font-family: monospace; word-break: break-all;">${item.accountInfo}</span></div>`;
+            } else if (item.status === 'rejected') {
+                statusText = 'مرفوض بسبب الدفع ❌'; statusClass = 'status-rejected';
+                extraDetails = `<p style="font-size: 12px; color: #ff4545; margin-top: 5px; font-weight: bold;">🚫 نأسف، لم نتمكن من مطابقة رقم العملية المالي.</p>`;
+            }
+            container.innerHTML += `
+                <div class="order-item">
+                    <div class="order-header"><span>شراء: ${item.title}</span><span class="order-status ${statusClass}">${statusText}</span></div>
+                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 2px;">رقم المعاملة: <span style="color: var(--accent-color); font-weight: bold;">${item.refId}</span></p>
+                    <p style="font-size: 14px; color: var(--accent-color); font-weight: bold;">المبلغ: ${item.price}$</p>
+                    ${extraDetails}
+                </div>`;
+        } else if (item.type === 'sell') {
+            let statusText = 'طلبك قيد المراجعة ⏳'; let statusClass = 'status-pending'; let extraDetails = '';
+            if (item.status === 'approved') {
+                statusText = 'مقبول ومعروض بالمتجر ✅'; statusClass = 'status-completed';
+                extraDetails = `<div style="background: rgba(46, 196, 182, 0.1); border: 1px solid #2ec4b6; padding: 8px; border-radius: 8px; margin-top: 8px; font-size:13px; text-align: center; font-weight:bold;">💬 رد الإدارة ضياء: ${item.adminReply || 'تم النشر بنجاح'}</div>`;
+            } else if (item.status === 'rejected') {
+                statusText = 'مرفوض ❌'; statusClass = 'status-rejected';
+                extraDetails = `<div style="background: rgba(255, 69, 69, 0.1); border: 1px solid #ff4545; padding: 8px; border-radius: 8px; margin-top: 8px; font-size:13px; color: #ff4545; text-align: center; font-weight:bold;">💬 سبب الرفض: ${item.adminReply || 'غير مطابق للشروط'}</div>`;
+            }
+            container.innerHTML += `
+                <div class="order-item" style="border-right: 4px solid #ffcc00;">
+                    <div class="order-header"><span>بيع: ${item.title}</span><span class="order-status ${statusClass}">${statusText}</span></div>
+                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 2px;">السعر المطلوب: ${item.price}$</p>
+                    ${extraDetails}
+                </div>`;
+        }
+    });
+    updateBadge(completedCount);
+}
+
+function updateBadge(currentCount) {
+    if(!currentUser) return;
+    const lastSeenCount = parseInt(localStorage.getItem('seenItems_' + currentUser.uid)) || 0;
+    const unseen = currentCount - lastSeenCount;
+    
+    const mainBadge = document.getElementById('main-menu-badge');
+    const sidebarBadge = document.getElementById('sidebar-orders-badge');
+    
+    if (unseen > 0) {
+        if(mainBadge) { mainBadge.innerText = unseen; mainBadge.style.display = 'inline-block'; }
+        if(sidebarBadge) { sidebarBadge.innerText = unseen; sidebarBadge.style.display = 'inline-block'; }
+    } else {
+        if(mainBadge) mainBadge.style.display = 'none';
+        if(sidebarBadge) sidebarBadge.style.display = 'none';
+    }
+}
+
 window.submitLogin = function() {
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
-    if(!email || !pass) { alert("يرجى ملء الحقول"); return; }
-    auth.signInWithEmailAndPassword(email, pass)
-        .then(() => window.closeAuthModal())
-        .catch(err => alert("خطأ في الدخول: " + err.message));
+    if(!email || !pass) return;
+    auth.signInWithEmailAndPassword(email, pass).then(() => window.closeAuthModal()).catch(err => alert("خطأ: " + err.message));
 };
 
 window.submitRegister = function() {
     const email = document.getElementById('reg-email').value.trim();
     const pass = document.getElementById('reg-pass').value.trim();
-    if(!email || !pass) { alert("يرجى ملء الحقول"); return; }
-    auth.createUserWithEmailAndPassword(email, pass)
-        .then(() => window.closeAuthModal())
-        .catch(err => alert("خطأ في التسجيل: " + err.message));
+    if(!email || !pass) return;
+    auth.createUserWithEmailAndPassword(email, pass).then(() => window.closeAuthModal()).catch(err => alert("خطأ: " + err.message));
 };
 
-// دالة إرسال تأكيد عملية الدفع (تم إصلاحها وإخراجها لتعمل بشكل كامل ومستقل)
 window.submitPayment = function() {
     const method = document.getElementById('payment-method').value;
     const refId = document.getElementById('payment-ref-id').value.trim();
-    
-    if (!refId) { 
-        alert("يرجى إدخال رقم العملية للتحقق."); 
-        return; 
-    }
+    if (!refId) { alert("يرجى إدخال رقم العملية."); return; }
+    if (!pendingAccountToBuy) return;
 
-    if (!pendingAccountToBuy) {
-        alert("خطأ: يرجى إغلاق النافذة وإعادة اختيار الحساب.");
-        return;
-    }
-
-    const newOrderRef = db.ref('orders').push();
-    newOrderRef.set({
+    db.ref('orders').push().set({
         title: pendingAccountToBuy.title,
         price: pendingAccountToBuy.price,
         category: pendingAccountToBuy.category,
@@ -356,17 +315,17 @@ window.submitPayment = function() {
         refId: refId,
         userEmail: currentUser ? currentUser.email : "unknown@user.com",
         accountInfo: "",
-        secretInfo: pendingAccountToBuy.secretInfo || "" // تحفظ البيانات الحساسة كما هي (مشفرة) لحين مراجعتها وقبولها من الأدمن
+        secretInfo: pendingAccountToBuy.secretInfo || "",
+        timestamp: Date.now()
     }).then(() => {
         alert("تم إرسال الطلب بنجاح! سيتم التحقق منه من قبل الإدارة فوراً ⚡");
-        window.closePaymentModal();
-        window.openOrdersModal();
-    }).catch(err => alert("فشل إرسال الطلب: " + err.message));
+        window.closePaymentModal(); window.openOrdersModal();
+    }).catch(err => alert("فشل: " + err.message));
 };
 
-// تشغيل الأقسام عند التحميل
 document.addEventListener("DOMContentLoaded", () => {
     window.toggleCategorySection('pubg');
     window.updateWalletDisplay();
     listenToProducts();
 });
+                                            
