@@ -122,27 +122,25 @@
             <!-- نموذج استعادة كلمة المرور -->
             <div id="forgot-form" class="auth-form" style="display: none;">
                 <div class="modal-title">🔑 استعادة كلمة السر</div>
-                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل بريدك الإلكتروني لإرسال كود التحقق</p>
+                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل بريدك الإلكتروني لإرسال رابط استعادة كلمة السر</p>
                 <div class="input-group">
                     <input type="email" id="reset-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
                 </div>
-                <button class="modal-submit-btn" style="cursor: pointer;" id="forgot-btn-submit" onclick="submitForgotPassword()">إرسال الكود 📩</button>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="forgot-btn-submit" onclick="submitForgotPassword()">إرسال الرابط 📩</button>
                 <div class="switch-text" style="margin-top: 15px;">
                     تذكرت كلمة السر؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">العودة لتسجيل الدخول</span>
                 </div>
             </div>
 
-            <!-- نموذج تعيين كلمة سر جديدة -->
+            <!-- نموذج تعيين كلمة سر جديدة (مرتبط تلقائياً برابط الإيميل) -->
             <div id="reset-pass-form" class="auth-form" style="display: none;">
                 <div class="modal-title">🔒 تعيين كلمة سر جديدة</div>
-                <div class="input-group">
-                    <input type="text" id="reset-code" class="modal-input-field" placeholder="أدخل الكود المرسل إليك (6 أرقام)" required>
-                </div>
+                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل كلمة المرور الجديدة لحسابك</p>
                 <div class="input-group" style="position: relative;">
                     <input type="password" id="new-pass" class="modal-input-field" placeholder="كلمة المرور الجديدة" style="padding-left: 45px;" required>
                     <span onclick="togglePasswordVisibility('new-pass', this)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px; opacity: 0.8;">👁️</span>
                 </div>
-                <button class="modal-submit-btn" style="cursor: pointer;" id="reset-pass-btn-submit" onclick="submitResetPassword()">تغيير كلمة السر 🚀</button>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="reset-pass-btn-submit" onclick="submitResetPassword()">تغيير كلمة السر وحفظها 🚀</button>
                 <div class="switch-text" style="margin-top: 15px;">
                     <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">إلغاء والعودة لتسجيل الدخول</span>
                 </div>
@@ -206,4 +204,5 @@
     
     <script src="app.js"></script>
 </body>
-</html>
+            </html>
+    
