@@ -1,4 +1,4 @@
-// app.js - سوق الأساطير (نسخة الحسابات الحقيقية فقط بدون أي حسابات وهمية)
+// app.js - سوق الأساطير (نسخة الحسابات الحقيقية والتحديثات الاحترافية)
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNPdxQMMPUO1Gn-hQztcy0GEGcmA22PWs",
@@ -18,6 +18,7 @@ const db = firebase.database();
 
 let currentUser = null;
 let pendingAccountToBuy = null;
+let currentResetCode = null; // متغير لحفظ كود استعادة كلمة السر
 
 const WALLETS = {
     "شام كاش (Sham Cash)": "ed5ecbd40a49c60a90f59a7c0ccb72f5",
@@ -107,7 +108,7 @@ window.closeOrdersModal = function() {
     if(modal) modal.style.display = 'none';
 };
 
-// --- دالة التبديل الدقيقة بين النماذج (متوافقة مع فئة الـ active والـ display) ---
+// --- دالة التبديل الدقيقة بين النماذج ---
 window.switchForm = function(type) {
     const forms = {
         'login': document.getElementById('login-form'),
@@ -157,7 +158,6 @@ window.buyAccount = function(title, price, category, secretInfo = "") {
     window.updateWalletDisplay();
 };
 
-// --- دالة فتح المعرض وتخزين الصور مؤقتاً لتجنب مشاكل الروابط الطويلة ---
 window.openProductGallery = function(productId, img1, img2, img3, img4) {
     localStorage.setItem('gallery_img1', img1 || '');
     localStorage.setItem('gallery_img2', img2 || '');
@@ -172,7 +172,6 @@ function listenToProducts() {
         const pubgContainer = document.getElementById('pubg-products-container');
         const clashContainer = document.getElementById('clash-products-container');
 
-        // تفريغ الحاويات تماماً من أي بضاعة وهمية أو سابقة
         if(pubgContainer) pubgContainer.innerHTML = '';
         if(clashContainer) clashContainer.innerHTML = '';
 
@@ -182,7 +181,6 @@ function listenToProducts() {
             return;
         }
 
-        // عرض الحسابات الحقيقية المنشورة من الفايربيس فقط
         for (let id in data) {
             const prod = data[id];
             
@@ -325,7 +323,7 @@ window.submitForgotPassword = function() {
     }
     auth.sendPasswordResetEmail(email)
         .then(() => {
-            alert("تم إرسال تعليمات استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح! 📩");
+            alert("تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح! 📩");
             window.switchForm('login');
         })
         .catch(err => {
@@ -334,8 +332,28 @@ window.submitForgotPassword = function() {
 };
 
 window.submitResetPassword = function() {
-    alert("تم تحديث الطلب بنجاح!");
-    window.switchForm('login');
+    const passField = document.getElementById('new-pass');
+    const newPass = passField ? passField.value.trim() : '';
+
+    if (!newPass) {
+        alert("يرجى إدخال كلمة المرور الجديدة.");
+        return;
+    }
+
+    if (!currentResetCode) {
+        alert("رابط إعادة التعيين غير صالح أو منتهي الصلاحية.");
+        return;
+    }
+
+    auth.confirmPasswordReset(currentResetCode, newPass)
+        .then(() => {
+            alert("تم تغيير كلمة السر بنجاح! يمكنك تسجيل الدخول الآن 🔐🚀");
+            window.switchForm('login');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(err => {
+            alert("فشل تغيير كلمة السر: " + err.message);
+        });
 };
 
 window.submitPayment = function() {
@@ -374,4 +392,17 @@ document.addEventListener("DOMContentLoaded", () => {
     window.toggleCategorySection('pubg');
     window.updateWalletDisplay();
     listenToProducts();
+
+    // التقاط كود إعادة التعيين تلقائياً إذا ضغط الزبون على رابط الإيميل
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const actionCode = urlParams.get('oobCode');
+
+    if (mode === 'resetPassword' && actionCode) {
+        currentResetCode = actionCode;
+        const modal = document.getElementById('auth-modal');
+        if(modal) modal.style.display = 'flex';
+        window.switchForm('reset-pass');
+    }
 });
+        
