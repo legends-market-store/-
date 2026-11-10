@@ -1,4 +1,4 @@
-// app.js - سوق الأساطير (نسخة الحسابات الحقيقية بدون أي أكواد روابط خارجية)
+// app.js - سوق الأساطير (محدث مع نظام الإشعارات الداخلي الشارة الحمراء بدقة تامة)
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNPdxQMMPUO1Gn-hQztcy0GEGcmA22PWs",
@@ -100,6 +100,7 @@ window.openOrdersModal = function() {
     }
     const modal = document.getElementById('orders-modal');
     if(modal) modal.style.display = 'flex';
+    window.clearNotificationBadge();
 };
 
 window.closeOrdersModal = function() {
@@ -107,7 +108,6 @@ window.closeOrdersModal = function() {
     if(modal) modal.style.display = 'none';
 };
 
-// --- دالة التبديل بين النماذج ---
 window.switchForm = function(type) {
     const forms = {
         'login': document.getElementById('login-form'),
@@ -239,6 +239,7 @@ auth.onAuthStateChanged((user) => {
             navBtn.style.color = "#000";
         }
         if(ordersContainer) ordersContainer.innerHTML = `<p style="text-align:center;font-size:13px;opacity:0.7;">لا يوجد طلبات حتى الآن</p>`;
+        window.clearNotificationBadge();
     }
 });
 
@@ -251,11 +252,23 @@ function listenToOrders() {
 
         if (!currentUser) return;
 
+        let hasNewNotification = false;
         const myOrders = [];
         for (let id in data) {
             if (data[id].userEmail === currentUser.email) {
-                myOrders.push(data[id]);
+                const orderItem = data[id];
+                myOrders.push(orderItem);
+                
+                if (orderItem.status === 'completed' || orderItem.status === 'rejected') {
+                    if (orderItem.userNotified === false || orderItem.userNotified === undefined) {
+                        hasNewNotification = true;
+                    }
+                }
             }
+        }
+
+        if (hasNewNotification) {
+            window.showNotificationBadge(1);
         }
 
         if(myOrders.length === 0) {
@@ -295,6 +308,37 @@ function listenToOrders() {
     });
 }
 
+window.showNotificationBadge = function(count = 1) {
+    const menuBadge = document.getElementById('menu-notif-badge');
+    const sidebarBadge = document.getElementById('sidebar-notif-badge');
+    if (menuBadge) {
+        menuBadge.innerText = count;
+        menuBadge.style.display = 'inline-block';
+    }
+    if (sidebarBadge) {
+        sidebarBadge.innerText = count;
+        sidebarBadge.style.display = 'inline-block';
+    }
+};
+
+window.clearNotificationBadge = function() {
+    const menuBadge = document.getElementById('menu-notif-badge');
+    const sidebarBadge = document.getElementById('sidebar-notif-badge');
+    if (menuBadge) menuBadge.style.display = 'none';
+    if (sidebarBadge) sidebarBadge.style.display = 'none';
+
+    if (currentUser) {
+        db.ref('orders').once('value', (snapshot) => {
+            const data = snapshot.val();
+            for (let id in data) {
+                if (data[id].userEmail === currentUser.email && (data[id].status === 'completed' || data[id].status === 'rejected')) {
+                    db.ref(`orders/${id}`).update({ userNotified: true });
+                }
+            }
+        });
+    }
+};
+
 window.submitLogin = function() {
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
@@ -320,7 +364,6 @@ window.submitForgotPassword = function() {
         alert("يرجى إدخال البريد الإلكتروني أولاً.");
         return;
     }
-    // دالة الإرسال الأصلية بدون أي روابط معقدة بالموقع
     auth.sendPasswordResetEmail(email)
         .then(() => {
             alert("تم إرسال تعليمات استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح! 📩");
@@ -360,7 +403,8 @@ window.submitPayment = function() {
         refId: refId,
         userEmail: currentUser ? currentUser.email : "unknown@user.com",
         accountInfo: "",
-        secretInfo: pendingAccountToBuy.secretInfo || ""
+        secretInfo: pendingAccountToBuy.secretInfo || "",
+        userNotified: false
     }).then(() => {
         alert("تم إرسال الطلب بنجاح! سيتم التحقق منه من قبل الإدارة فوراً ⚡");
         window.closePaymentModal();
@@ -373,4 +417,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.updateWalletDisplay();
     listenToProducts();
 });
-    
+        
