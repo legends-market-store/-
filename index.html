@@ -6,6 +6,29 @@
     <title>سوق الأساطير لبيع الحسابات</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .nav-badge-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .notif-badge {
+            background-color: #ff4545;
+            color: #ffffff;
+            border-radius: 50%;
+            padding: 2px 7px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 6px;
+            box-shadow: 0 0 8px rgba(255, 69, 69, 0.8);
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
     <div id="sidebarOverlay" class="sidebar-overlay" style="display: none;" onclick="toggleSidebar()"></div>
@@ -23,7 +46,10 @@
         </div>
         <div class="sidebar-menu">
             <div class="sidebar-item" style="cursor: pointer;" onclick="toggleCategorySection('clash'); toggleSidebar();">🔥 أفضل العروض (تاون ماكس)</div>
-            <div id="my-orders-btn-sidebar" class="sidebar-item" style="cursor: pointer; background: rgba(255, 204, 0, 0.08); color: var(--accent-color); border-color: var(--accent-color);" onclick="openOrdersModal(); toggleSidebar();">🛒 طلباتي (مشترياتي)</div>
+            <div id="my-orders-btn-sidebar" class="sidebar-item nav-badge-btn" style="cursor: pointer; background: rgba(255, 204, 0, 0.08); color: var(--accent-color); border-color: var(--accent-color);" onclick="openOrdersModal(); toggleSidebar();">
+                <span>🛒 طلباتي (مشترياتي)</span>
+                <span id="sidebar-notif-badge" class="notif-badge" style="display: none;">1</span>
+            </div>
             <a href="https://wa.me/963984509908?text=أريد%20أن%20أكون%20بائع%20في%20موقعك" target="_blank" class="sidebar-item" style="display: block; text-decoration: none; background: rgba(37, 211, 102, 0.1); color: #25D366; border-color: #25D366;">💰 أريد أن أبيع حسابي</a>
             <a href="https://wa.me/963984509908" target="_blank" class="sidebar-item" style="display: block; text-decoration: none;">📞 اتصل بنا (واتساب)</a>
         </div>
@@ -36,7 +62,10 @@
     <div id="main-page" class="page active-page">
         <header>
             <div class="nav-buttons">
-                <button class="menu-btn" onclick="toggleSidebar()">☰ القائمة</button>
+                <button class="menu-btn nav-badge-btn" onclick="toggleSidebar()">
+                    <span>☰ القائمة</span>
+                    <span id="menu-notif-badge" class="notif-badge" style="display: none;">1</span>
+                </button>
             </div>
             <h1 class="main-title">🏆 سوق الأساطير 🏆</h1>
             <p class="subtitle">بوابتك الآمنة والمباشرة لأقوى الحسابات الرقمية</p>
@@ -122,25 +151,27 @@
             <!-- نموذج استعادة كلمة المرور -->
             <div id="forgot-form" class="auth-form" style="display: none;">
                 <div class="modal-title">🔑 استعادة كلمة السر</div>
-                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل بريدك الإلكتروني لإرسال رابط استعادة كلمة السر</p>
+                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل بريدك الإلكتروني لإرسال كود التحقق</p>
                 <div class="input-group">
                     <input type="email" id="reset-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
                 </div>
-                <button class="modal-submit-btn" style="cursor: pointer;" id="forgot-btn-submit" onclick="submitForgotPassword()">إرسال الرابط 📩</button>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="forgot-btn-submit" onclick="submitForgotPassword()">إرسال الكود 📩</button>
                 <div class="switch-text" style="margin-top: 15px;">
                     تذكرت كلمة السر؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">العودة لتسجيل الدخول</span>
                 </div>
             </div>
 
-            <!-- نموذج تعيين كلمة سر جديدة (مرتبط تلقائياً برابط الإيميل) -->
+            <!-- نموذج تعيين كلمة سر جديدة -->
             <div id="reset-pass-form" class="auth-form" style="display: none;">
                 <div class="modal-title">🔒 تعيين كلمة سر جديدة</div>
-                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل كلمة المرور الجديدة لحسابك</p>
+                <div class="input-group">
+                    <input type="text" id="reset-code" class="modal-input-field" placeholder="أدخل الكود المرسل إليك (6 أرقام)" required>
+                </div>
                 <div class="input-group" style="position: relative;">
                     <input type="password" id="new-pass" class="modal-input-field" placeholder="كلمة المرور الجديدة" style="padding-left: 45px;" required>
                     <span onclick="togglePasswordVisibility('new-pass', this)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px; opacity: 0.8;">👁️</span>
                 </div>
-                <button class="modal-submit-btn" style="cursor: pointer;" id="reset-pass-btn-submit" onclick="submitResetPassword()">تغيير كلمة السر وحفظها 🚀</button>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="reset-pass-btn-submit" onclick="submitResetPassword()">تغيير كلمة السر 🚀</button>
                 <div class="switch-text" style="margin-top: 15px;">
                     <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">إلغاء والعودة لتسجيل الدخول</span>
                 </div>
@@ -204,5 +235,5 @@
     
     <script src="app.js"></script>
 </body>
-            </html>
+    </html>
     
