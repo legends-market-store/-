@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوق الأساطير لبيع الحسابات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="sidebarOverlay" class="sidebar-overlay" style="display: none;" onclick="toggleSidebar()"></div>
+
+    <div class="trust-banner" dir="ltr">
+        <div class="ticker-text">
+            🛡️ سوق الأساطير لبيع الحسابات بشكل آمن وموثوق مع ضمان استرداد الأموال وجميع الحقوق محفوظة، شكراً لثقتكم بنا ❤️ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🛡️ سوق الأساطير لبيع الحسابات بشكل آمن وموثوق مع ضمان استرداد الأموال وجميع الحقوق محفوظة، شكراً لثقتكم بنا ❤️
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar" style="right: -300px;">
+        <div class="sidebar-header">
+            <h3>⚙️ القائمة والخدمات</h3>
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" style="cursor: pointer;" onclick="toggleCategorySection('clash'); toggleSidebar();">🔥 أفضل العروض (تاون ماكس)</div>
+            <div id="my-orders-btn-sidebar" class="sidebar-item" style="cursor: pointer; background: rgba(255, 204, 0, 0.08); color: var(--accent-color); border-color: var(--accent-color);" onclick="openOrdersModal(); toggleSidebar();">🛒 طلباتي (مشترياتي)</div>
+            <a href="https://wa.me/963984509908?text=أريد%20أن%20أكون%20بائع%20في%20موقعك" target="_blank" class="sidebar-item" style="display: block; text-decoration: none; background: rgba(37, 211, 102, 0.1); color: #25D366; border-color: #25D366;">💰 أريد أن أبيع حسابي</a>
+            <a href="https://wa.me/963984509908" target="_blank" class="sidebar-item" style="display: block; text-decoration: none;">📞 اتصل بنا (واتساب)</a>
+        </div>
+        <div class="theme-switch-wrapper">
+            <span>☀️ الوضع النهاري / الليلي 🌙</span>
+            <input type="checkbox" id="theme-toggle" onclick="toggleTheme()" style="width: 40px; height: 20px; cursor: pointer;">
+        </div>
+    </div>
+
+    <div id="main-page" class="page active-page">
+        <header>
+            <div class="nav-buttons">
+                <button class="menu-btn" onclick="toggleSidebar()">☰ القائمة</button>
+            </div>
+            <h1 class="main-title">🏆 سوق الأساطير 🏆</h1>
+            <p class="subtitle">بوابتك الآمنة والمباشرة لأقوى الحسابات الرقمية</p>
+        </header>
+
+        <a href="https://wa.me/963984509908?text=أريد%20أن%20أكون%20بائع%20في%20موقعك" target="_blank" class="sell-now-btn" style="display: block; text-decoration: none; text-align: center; cursor: pointer;">
+            🤝 هل تريد بيع حسابك? اضغط هنا وكن بائعاً معنا!
+        </a>
+
+        <div class="card-container">
+            <div class="login-banner">
+                <div class="login-text" id="user-status-text">🎯 تصفح كـ زائر.. سجل دخولك لتوثيق مشترياتك</div>
+                <div class="login-btn" id="login-nav-btn" style="cursor: pointer;" onclick="handleAuthAction()">👤 تسجيل الدخول</div>
+            </div>
+        </div>
+
+        <div class="categories-grid">
+            <div id="btn-pubg" class="category-card pubg-card active-card" style="cursor: pointer; user-select: none;" onclick="toggleCategorySection('pubg')">
+                <span style="pointer-events: none;">🎮 قسم ببجي موبايل</span>
+            </div>
+            <div id="btn-clash" class="category-card clash-card" style="cursor: pointer; user-select: none;" onclick="toggleCategorySection('clash')">
+                <span style="pointer-events: none;">⚔️ قسم كلاش أوف كلانس</span>
+            </div>
+        </div>
+
+        <div id="pubg-section" class="products-section">
+            <h3 class="section-header-title" style="border-right-color: var(--pubg-color);">🛒 حسابات ببجي المتوفرة حالياً</h3>
+            <div id="pubg-products-container">
+                <!-- جاري جلب الحسابات الحقيقية فقط من الفايربيس عبر app.js -->
+            </div>
+        </div>
+
+        <div id="clash-section" class="products-section" style="display: none;">
+            <h3 class="section-header-title" style="border-right-color: var(--accent-color);">🛒 حسابات كلاش أوف كلانس</h3>
+            <div id="clash-products-container">
+                <!-- جاري جلب الحسابات الحقيقية فقط من الفايربيس عبر app.js -->
+            </div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <button class="close-modal" style="cursor: pointer;" onclick="closeAuthModal()">&times;</button>
+            
+            <!-- نموذج تسجيل الدخول -->
+            <div id="login-form" class="auth-form active">
+                <div class="modal-title">🔐 تسجيل الدخول للمتجر</div>
+                <div class="input-group">
+                    <input type="email" id="login-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
+                </div>
+                <div class="input-group" style="position: relative;">
+                    <input type="password" id="login-pass" class="modal-input-field" placeholder="كلمة المرور" style="padding-left: 45px;" required>
+                    <span onclick="togglePasswordVisibility('login-pass', this)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px; opacity: 0.8;">👁️</span>
+                </div>
+                <div style="text-align: left; margin: -5px 0 15px 0;">
+                    <span class="switch-link" style="cursor: pointer; font-size: 13px;" onclick="switchForm('forgot')">🔑 هل نسيت كلمة السر؟</span>
+                </div>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="login-btn-submit" onclick="submitLogin()">دخول آمن 🚀</button>
+                <div class="switch-text" style="margin-top: 15px;">
+                    أليس لديك حساب؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('register')">سجل الآن مجاناً</span>
+                </div>
+            </div>
+
+            <!-- نموذج إنشاء حساب جديد -->
+            <div id="register-form" class="auth-form" style="display: none;">
+                <div class="modal-title">✨ إنشاء حساب أسطوري جديد</div>
+                <div class="input-group">
+                    <input type="text" id="reg-name" class="modal-input-field" placeholder="الاسم الكامل" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="reg-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
+                </div>
+                <div class="input-group" style="position: relative;">
+                    <input type="password" id="reg-pass" class="modal-input-field" placeholder="كلمة المرور" style="padding-left: 45px;" required>
+                    <span onclick="togglePasswordVisibility('reg-pass', this)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px; opacity: 0.8;">👁️</span>
+                </div>
+                <button class="modal-submit-btn" style="background-color: var(--pubg-color); color: #000; cursor: pointer;" id="reg-btn-submit" onclick="submitRegister()">تأكيد التسجيل والانضمام ⚔️</button>
+                <div class="switch-text" style="margin-top: 15px;">
+                    لديك حساب بالفعل؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">سجل دخولك</span>
+                </div>
+            </div>
+
+            <!-- نموذج استعادة كلمة المرور -->
+            <div id="forgot-form" class="auth-form" style="display: none;">
+                <div class="modal-title">🔑 استعادة كلمة السر</div>
+                <p style="text-align: center; font-size: 13px; opacity: 0.85; margin-bottom: 15px;">أدخل بريدك الإلكتروني لإرسال كود التحقق</p>
+                <div class="input-group">
+                    <input type="email" id="reset-email" class="modal-input-field" placeholder="بريدك الإلكتروني" required>
+                </div>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="forgot-btn-submit" onclick="submitForgotPassword()">إرسال الكود 📩</button>
+                <div class="switch-text" style="margin-top: 15px;">
+                    تذكرت كلمة السر؟ <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">العودة لتسجيل الدخول</span>
+                </div>
+            </div>
+
+            <!-- نموذج تعيين كلمة سر جديدة -->
+            <div id="reset-pass-form" class="auth-form" style="display: none;">
+                <div class="modal-title">🔒 تعيين كلمة سر جديدة</div>
+                <div class="input-group">
+                    <input type="text" id="reset-code" class="modal-input-field" placeholder="أدخل الكود المرسل إليك (6 أرقام)" required>
+                </div>
+                <div class="input-group" style="position: relative;">
+                    <input type="password" id="new-pass" class="modal-input-field" placeholder="كلمة المرور الجديدة" style="padding-left: 45px;" required>
+                    <span onclick="togglePasswordVisibility('new-pass', this)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px; opacity: 0.8;">👁️</span>
+                </div>
+                <button class="modal-submit-btn" style="cursor: pointer;" id="reset-pass-btn-submit" onclick="submitResetPassword()">تغيير كلمة السر 🚀</button>
+                <div class="switch-text" style="margin-top: 15px;">
+                    <span class="switch-link" style="cursor: pointer;" onclick="switchForm('login')">إلغاء والعودة لتسجيل الدخول</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="payment-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <button class="close-modal" style="cursor: pointer;" onclick="closePaymentModal()">&times;</button>
+            <div class="modal-title" id="payment-modal-title">💸 إتمام الدفع الآمن</div>
+            <p style="text-align: center; margin-bottom: 10px; font-size: 14px; opacity: 0.9;">يرجى تحويل مبلغ الحساب أولاً، ثم املأ البيانات بالأسفل:</p>
+
+            <div class="admin-form-group">
+                <label>اختر وسيلة التحويل التي دفعت بها:</label>
+                <select id="payment-method" onchange="updateWalletDisplay()">
+                    <option value="شام كاش (Sham Cash)">شام كاش (Sham Cash)</option>
+                    <option value="بينانس (Binance Pay)">بينانس (Binance Pay)</option>
+                </select>
+            </div>
+
+            <div id="wallet-display-box" class="wallet-details"></div>
+
+            <div class="admin-form-group" style="margin-top:15px;">
+                <label>رقم عملية التحويل / كود المعاملة المرسل إلينا:</label>
+                <input type="text" id="payment-ref-id" class="modal-input-field" placeholder="مثال: TxnID1029384" required>
+            </div>
+
+            <button class="modal-submit-btn" style="cursor: pointer;" id="submit-payment-btn" onclick="submitPayment()">إرسال وتأكيد الطلب ⚡</button>
+        </div>
+    </div>
+
+    <div id="orders-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 420px;">
+            <button class="close-modal" style="cursor: pointer;" onclick="closeOrdersModal()">&times;</button>
+            <div class="modal-title">🛒 سلة مشترياتي وحساباتي</div>
+            <div class="guide-alert">💡 دليل الأمان: طلباتك المحولة حديثاً قيد المراجعة، بمجرد التحقق سنرسل الحساب هنا فوراً!</div>
+            <div id="orders-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px; margin-top: 15px;"></div>
+            <button class="modal-submit-btn" style="margin-top: 15px; background: #25D366; color: white; cursor: pointer;" onclick="window.open('https://wa.me/963984509908', '_blank')">💬 تواصل لتسريع التسليم</button>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconEl) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === "password") {
+                input.type = "text";
+                iconEl.textContent = "👁️‍🗨️";
+            } else {
+                input.type = "password";
+                iconEl.textContent = "👁️";
+            }
+        }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

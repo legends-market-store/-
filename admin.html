@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المدير - سوق الأساطير</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .admin-page {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .login-box {
+            border: 2px solid #ffcc00;
+            border-radius: 20px;
+            padding: 35px 20px;
+            background: #0f1013;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.15);
+        }
+
+        .login-title {
+            color: #ffcc00;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #222222;
+            background: #1c1d22;
+            color: #ffffff;
+            font-size: 15px;
+            margin-bottom: 18px;
+            text-align: center;
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: #555555;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #ffcc00;
+            color: #000000;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .dashboard-box {
+            border: 2px solid #ffcc00;
+            border-radius: 20px;
+            padding: 25px 20px;
+            background: #0f1013;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+        }
+
+        .dashboard-title {
+            color: #ffcc00;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .select-field {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #222222;
+            background: #1c1d22;
+            color: #ffffff;
+            font-size: 15px;
+            margin-bottom: 18px;
+            text-align: right;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23777' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 15px center;
+            padding-left: 40px;
+        }
+
+        .file-upload-group {
+            margin-bottom: 18px;
+            text-align: right;
+            background: #1c1d22;
+            border: 1px solid #222222;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .file-upload-group label {
+            display: block;
+            font-size: 13px;
+            color: #ffcc00;
+            margin-bottom: 8px;
+        }
+
+        .file-upload-group input[type="file"] {
+            width: 100%;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .separator {
+            border: none;
+            height: 1px;
+            background: #2a2a2a;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .pending {
+            color: #2ec4b6;
+        }
+
+        .inventory {
+            color: #00d2ff;
+        }
+
+        .info-text {
+            color: #888888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: right;
+        }
+
+        .inventory-card {
+            background: #1c1d22;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .inventory-card-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .inventory-card-price {
+            font-size: 13px;
+            color: #ffcc00;
+        }
+
+        .inventory-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .edit-btn {
+            background: #2ec4b6;
+            color: #000;
+        }
+
+        .delete-btn {
+            background: #ff4545;
+            color: #fff;
+        }
+
+        .confirm-pay-btn {
+            background: #2ec4b6;
+            color: #000;
+        }
+
+        .reject-pay-btn {
+            background: #ff4545;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="admin-page active">
+        <div class="login-box">
+            <div class="login-title">🔐 تسجيل دخول بوابة المدير</div>
+            <input type="text" id="username" class="input-field" placeholder="اسم المستخدم">
+            <input type="password" id="password" class="input-field" placeholder="كلمة المرور">
+            <button class="submit-btn" onclick="login()">دخول آمن</button>
+        </div>
+    </div>
+
+    <div id="dashboard-page" class="admin-page">
+        <div class="dashboard-box">
+            
+            <div id="form-heading" class="dashboard-title">🚀 إضافة حساب جديد للمتجر</div>
+            
+            <select id="category" class="select-field">
+                <option value="ببجي موبايل">🎮 قسم ببجي موبايل</option>
+                <option value="كلاش أوف كلانس">⚔️ قسم كلاش أوف كلانس</option>
+            </select>
+            
+            <input type="text" id="acc-title" class="input-field" placeholder="اسم الحساب (مثال: تاون 10 شبه مكس)" style="text-align: right;">
+            
+            <input type="text" id="acc-price" class="input-field" placeholder="السعر (مثال: 45)" style="text-align: right;">
+            
+            <!-- أزرار رفع الصور الأربعة من المعرض مباشرة -->
+            <div class="file-upload-group">
+                <label>🖼️ الصورة الأساسية (من المعرض):</label>
+                <input type="file" id="img-file-1" accept="image/*">
+            </div>
+            <div class="file-upload-group">
+                <label>🖼️ الصورة الثانية (اختياري):</label>
+                <input type="file" id="img-file-2" accept="image/*">
+            </div>
+            <div class="file-upload-group">
+                <label>🖼️ الصورة الثالثة (اختياري):</label>
+                <input type="file" id="img-file-3" accept="image/*">
+            </div>
+            <div class="file-upload-group">
+                <label>🖼️ الصورة الرابعة (اختياري):</label>
+                <input type="file" id="img-file-4" accept="image/*">
+            </div>
+            
+            <input type="text" id="acc-secret" class="input-field" placeholder="🔒 بيانات الحساب السرية (الإيميل والرمز للزبون)" style="text-align: right; border: 1.5px dashed #ffcc00;">
+            
+            <button id="main-action-btn" class="submit-btn" onclick="handlePublishOrUpdate()">نشر الحساب فوراً</button>
+            <button id="cancel-edit-btn" class="submit-btn" style="background: #888; margin-top: 10px; display: none;" onclick="cancelEditMode()">إلغاء التعديل</button>
+            
+            <hr class="separator">
+            
+            <div class="section-title pending">📥 طلبات المبيعات المعلقة (شام كاش / بينانس)</div>
+            <div id="pending-container" class="inventory-list">
+                <div class="info-text">جاري جلب الطلبات من الفايربيس...</div>
+            </div>
+            
+            <hr class="separator">
+            
+            <div class="section-title inventory">📦 قائمة بضاعتك الحالية بالمتجر</div>
+            <div id="inventory-container" class="inventory-list">
+                <div class="info-text">جاري جلب البضائع من الفايربيس...</div>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNPdxQMMPUO1Gn-hQztcy0GEGcmA22PWs",
+            authDomain: "legends-market-446ca.firebaseapp.com",
+            databaseURL: "https://legends-market-446ca-default-rtdb.firebaseio.com",
+            projectId: "legends-market-446ca",
+            storageBucket: "legends-market-446ca.firebasestorage.app",
+            messagingSenderId: "981095007194",
+            appId: "1:981095007194:web:edfd31d3ed4c6f125e36e3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const SECRET_ENCRYPTION_KEY = "DyaaSukAlAsateerSecurityKey2026";
+        let editModeId = null;
+        let existingImages = { img: '', img2: '', img3: '', img4: '' };
+
+        function login() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (user === "ضياء" && pass === "1234") {
+                document.getElementById('login-page').classList.remove('active');
+                document.getElementById('dashboard-page').classList.add('active');
+                listenToFirebaseProducts();
+                listenToFirebaseOrders();
+            } else {
+                alert("البيانات خاطئة! تأكد من اسم المستخدم وكلمة المرور.");
+            }
+        }
+
+        function listenToFirebaseOrders() {
+            db.ref('orders').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('pending-container');
+                container.innerHTML = '';
+
+                if (!data) {
+                    container.innerHTML = '<div class="info-text">لا توجد طلبات معلقة بانتظارك حالياً.</div>';
+                    return;
+                }
+
+                let hasPending = false;
+                for (let id in data) {
+                    const order = data[id];
+                    if (order.status === 'pending') {
+                        hasPending = true;
+                        const card = document.createElement('div');
+                        card.className = 'inventory-card';
+                        card.style.borderColor = '#2ec4b6';
+                        card.innerHTML = `
+                            <div class="inventory-card-title">📧 إيميل العميل: ${order.userEmail}</div>
+                            <div class="inventory-card-price">🛍️ اسم المنتج المطلوب: ${order.title}</div>
+                            <div class="inventory-card-price">🏦 طريقة الدفع: ${order.method}</div>
+                            <div class="inventory-card-price" style="color: #ffcc00; font-family: monospace;">🔢 كود / رقم العملية: ${order.refId}</div>
+                            <div class="inventory-card-price" style="color: #2ec4b6;">💰 السعر المطلوب: ${order.price} $</div>
+                            <div class="inventory-card-actions">
+                                <button class="action-btn confirm-pay-btn" onclick="confirmPaymentAndRelease('${id}', '${order.userEmail}', '${order.secretInfo || ''}')">✅ قبول وإرسال الحساب</button>
+                                <button class="action-btn reject-pay-btn" onclick="rejectOrder('${id}')">❌ رفض</button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                }
+
+                if (!hasPending) {
+                    container.innerHTML = '<div class="info-text">لا توجد طلبات معلقة بانتظارك حالياً.</div>';
+                }
+            });
+        }
+
+        function confirmPaymentAndRelease(orderId, email, secretInfo) {
+            if (confirm(`هل تود تأكيد استلام الدفع وإرسال بيانات الحساب تلقائياً للعميل (${email})؟`)) {
+                let decryptedInfo = secretInfo;
+                if (secretInfo && secretInfo.trim() !== "") {
+                    try {
+                        const bytes = CryptoJS.AES.decrypt(secretInfo, SECRET_ENCRYPTION_KEY);
+                        const decodedText = bytes.toString(CryptoJS.enc.Utf8);
+                        if (decodedText) decryptedInfo = decodedText;
+                    } catch (e) {
+                        console.log("خطأ في فك التشفير:", e);
+                    }
+                } else {
+                    decryptedInfo = "لم يتم توفير تفاصيل إضافية";
+                }
+
+                db.ref(`orders/${orderId}`).update({
+                    status: 'completed',
+                    accountInfo: decryptedInfo
+                }).then(() => {
+                    alert("تم قبول وتحديث الطلب بنجاح! 🚀");
+                }).catch(err => {
+                    alert("فشل تحديث الطلب: " + err.message);
+                });
+            }
+        }
+
+        function rejectOrder(orderId) {
+            if (confirm("هل أنت متأكد من رفض هذا الطلب؟")) {
+                db.ref(`orders/${orderId}`).update({
+                    status: 'rejected'
+                }).then(() => {
+                    alert("تم رفض الطلب بنجاح ❌");
+                }).catch(err => {
+                    alert("فشل الرفض: " + err.message);
+                });
+            }
+        }
+
+        function listenToFirebaseProducts() {
+            db.ref('products').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('inventory-container');
+                container.innerHTML = '';
+
+                if (!data) {
+                    container.innerHTML = '<div class="info-text" style="margin-bottom: 0;">لا توجد حسابات معروضة حالياً بالمتجر.</div>';
+                    return;
+                }
+
+                for (let id in data) {
+                    const acc = data[id];
+                    const card = document.createElement('div');
+                    card.className = 'inventory-card';
+                    card.innerHTML = `
+                        <div class="inventory-card-title">${acc.title} (${acc.category})</div>
+                        <div class="inventory-card-price">السعر: ${acc.price} $</div>
+                        <div class="inventory-card-actions">
+                            <button class="action-btn edit-btn" onclick="startEdit('${id}', '${acc.category}', '${acc.title}', '${acc.price}', '${acc.img || ''}', '${acc.img2 || ''}', '${acc.img3 || ''}', '${acc.img4 || ''}', '${acc.secret || ''}')">⚙️ تعديل</button>
+                            <button class="action-btn delete-btn" onclick="deleteAccount('${id}')">🗑️ حذف نهائي</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        }
+
+        function startEdit(id, category, title, price, img, img2, img3, img4, secret) {
+            editModeId = id;
+            existingImages = { img, img2, img3, img4 };
+
+            let decryptedSecret = "";
+            if (secret) {
+                try {
+                    const bytes = CryptoJS.AES.decrypt(secret, SECRET_ENCRYPTION_KEY);
+                    decryptedSecret = bytes.toString(CryptoJS.enc.Utf8);
+                    if(!decryptedSecret) decryptedSecret = secret;
+                } catch(e) {
+                    decryptedSecret = secret;
+                }
+            }
+
+            document.getElementById('category').value = category;
+            document.getElementById('acc-title').value = title;
+            document.getElementById('acc-price').value = price;
+            document.getElementById('acc-secret').value = decryptedSecret;
+
+            document.getElementById('img-file-1').value = '';
+            document.getElementById('img-file-2').value = '';
+            document.getElementById('img-file-3').value = '';
+            document.getElementById('img-file-4').value = '';
+
+            document.getElementById('form-heading').innerText = '⚙️ تعديل بيانات المنشور بالمتجر';
+            document.getElementById('main-action-btn').innerText = 'تحديث وحفظ التعديلات الحية';
+            document.getElementById('main-action-btn').style.background = '#2ec4b6';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEditMode() {
+            editModeId = null;
+            existingImages = { img: '', img2: '', img3: '', img4: '' };
+            document.getElementById('category').value = 'ببجي موبايل';
+            document.getElementById('acc-title').value = '';
+            document.getElementById('acc-price').value = '';
+            document.getElementById('img-file-1').value = '';
+            document.getElementById('img-file-2').value = '';
+            document.getElementById('img-file-3').value = '';
+            document.getElementById('img-file-4').value = '';
+            document.getElementById('acc-secret').value = '';
+
+            document.getElementById('form-heading').innerText = '🚀 إضافة حساب جديد للمتجر';
+            document.getElementById('main-action-btn').innerText = 'نشر الحساب فوراً';
+            document.getElementById('main-action-btn').style.background = '#ffcc00';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+        }
+
+        // دالة قراءة ملفات الصور وتحويلها مباشرة بدون تعقيد
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function handlePublishOrUpdate() {
+            const category = document.getElementById('category').value;
+            const title = document.getElementById('acc-title').value.trim();
+            const price = document.getElementById('acc-price').value.trim();
+            const secretRaw = document.getElementById('acc-secret').value.trim();
+
+            const fileInput1 = document.getElementById('img-file-1').files[0];
+            const fileInput2 = document.getElementById('img-file-2').files[0];
+            const fileInput3 = document.getElementById('img-file-3').files[0];
+            const fileInput4 = document.getElementById('img-file-4').files[0];
+
+            if (!title || !price || !secretRaw) {
+                alert("يرجى ملء كافة الحقول والبيانات السرية للحساب قبل النشر.");
+                return;
+            }
+
+            if (editModeId === null && !fileInput1) {
+                alert("يرجى اختيار الصورة الأساسية للحساب على الأقل من المعرض!");
+                return;
+            }
+
+            let img = existingImages.img;
+            let img2 = existingImages.img2;
+            let img3 = existingImages.img3;
+            let img4 = existingImages.img4;
+
+            try {
+                if (fileInput1) img = await convertFileToBase64(fileInput1);
+                if (fileInput2) img2 = await convertFileToBase64(fileInput2);
+                if (fileInput3) img3 = await convertFileToBase64(fileInput3);
+                if (fileInput4) img4 = await convertFileToBase64(fileInput4);
+            } catch (err) {
+                alert("حدث خطأ أثناء تحميل الصور من المعرض.");
+                return;
+            }
+
+            const encryptedSecret = CryptoJS.AES.encrypt(secretRaw, SECRET_ENCRYPTION_KEY).toString();
+
+            if (editModeId !== null) {
+                db.ref(`products/${editModeId}`).update({
+                    category,
+                    title,
+                    price,
+                    img,
+                    img2,
+                    img3,
+                    img4,
+                    secret: encryptedSecret
+                }).then(() => {
+                    alert("تم تعديل المنتج بنجاح وتحديثه لدى جميع زوار الموقع! ✅");
+                    cancelEditMode();
+                }).catch(err => {
+                    alert("فشل التحديث: " + err.message);
+                });
+            } else {
+                const newProdRef = db.ref('products').push();
+                newProdRef.set({
+                    category,
+                    title,
+                    price,
+                    img,
+                    img2,
+                    img3,
+                    img4,
+                    secret: encryptedSecret
+                }).then(() => {
+                    alert("تم نشر الحساب الجديد بنجاح وعرضه على متجرك! 🚀");
+                    cancelEditMode();
+                }).catch(err => {
+                    alert("فشل النشر: " + err.message);
+                });
+            }
+        }
+
+        function deleteAccount(id) {
+            if (confirm("هل أنت متأكد من حذف هذا الحساب نهائياً من المتجر؟")) {
+                db.ref(`products/${id}`).remove().then(() => {
+                    alert("تم حذف الحساب بنجاح من متجرك ✅");
+                }).catch(err => {
+                    alert("فشل الحذف: " + err.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

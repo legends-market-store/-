@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض صور الحساب - سوق الأساطير</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #ffcc00;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .gallery img {
+            width: 100%;
+            border-radius: 12px;
+            border: 2px solid #2a2a2a;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: none; /* مخفية افتراضياً حتى نتأكد من وجود رابط أو صورة لها */
+        }
+
+        .back-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            background: #ffcc00;
+            color: #000000;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📸 استعراض صور الحساب كاملة</h2>
+        
+        <div class="gallery">
+            <img id="img1" alt="الصورة الأولى">
+            <img id="img2" alt="الصورة الثانية">
+            <img id="img3" alt="الصورة الثالثة">
+            <img id="img4" alt="الصورة الرابعة">
+        </div>
+
+        <a href="index.html" class="back-btn">🔙 العودة إلى المتجر</a>
+    </div>
+
+    <script>
+        // جلب الصور المخزنة بأمان من ذاكرة التصفح المؤقتة لمنع مشاكل تقطيع الروابط الطويلة
+        for (let i = 1; i <= 4; i++) {
+            const imgUrl = localStorage.getItem('gallery_img' + i);
+            const imgElement = document.getElementById('img' + i);
+            
+            if (imgUrl && imgUrl.trim() !== "" && imgUrl !== "undefined" && imgUrl !== "null") {
+                imgElement.src = imgUrl;
+                imgElement.style.display = "block"; // إظهار الصورة فوراً
+            }
+        }
+    </script>
+</body>
+</html>
