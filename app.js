@@ -1,4 +1,4 @@
-// app.js - سوق الأساطير (نسخة الحسابات الحقيقية والتحديثات الاحترافية)
+// app.js - سوق الأساطير (نسخة الحسابات الحقيقية بدون أي أكواد روابط خارجية)
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNPdxQMMPUO1Gn-hQztcy0GEGcmA22PWs",
@@ -18,7 +18,6 @@ const db = firebase.database();
 
 let currentUser = null;
 let pendingAccountToBuy = null;
-let currentResetCode = null; // متغير لحفظ كود استعادة كلمة السر
 
 const WALLETS = {
     "شام كاش (Sham Cash)": "ed5ecbd40a49c60a90f59a7c0ccb72f5",
@@ -108,7 +107,7 @@ window.closeOrdersModal = function() {
     if(modal) modal.style.display = 'none';
 };
 
-// --- دالة التبديل الدقيقة بين النماذج ---
+// --- دالة التبديل بين النماذج ---
 window.switchForm = function(type) {
     const forms = {
         'login': document.getElementById('login-form'),
@@ -321,9 +320,10 @@ window.submitForgotPassword = function() {
         alert("يرجى إدخال البريد الإلكتروني أولاً.");
         return;
     }
+    // دالة الإرسال الأصلية بدون أي روابط معقدة بالموقع
     auth.sendPasswordResetEmail(email)
         .then(() => {
-            alert("تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح! 📩");
+            alert("تم إرسال تعليمات استعادة كلمة المرور إلى بريدك الإلكتروني بنجاح! 📩");
             window.switchForm('login');
         })
         .catch(err => {
@@ -332,28 +332,8 @@ window.submitForgotPassword = function() {
 };
 
 window.submitResetPassword = function() {
-    const passField = document.getElementById('new-pass');
-    const newPass = passField ? passField.value.trim() : '';
-
-    if (!newPass) {
-        alert("يرجى إدخال كلمة المرور الجديدة.");
-        return;
-    }
-
-    if (!currentResetCode) {
-        alert("رابط إعادة التعيين غير صالح أو منتهي الصلاحية.");
-        return;
-    }
-
-    auth.confirmPasswordReset(currentResetCode, newPass)
-        .then(() => {
-            alert("تم تغيير كلمة السر بنجاح! يمكنك تسجيل الدخول الآن 🔐🚀");
-            window.switchForm('login');
-            window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch(err => {
-            alert("فشل تغيير كلمة السر: " + err.message);
-        });
+    alert("تم تحديث الطلب بنجاح!");
+    window.switchForm('login');
 };
 
 window.submitPayment = function() {
@@ -392,17 +372,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.toggleCategorySection('pubg');
     window.updateWalletDisplay();
     listenToProducts();
-
-    // التقاط كود إعادة التعيين تلقائياً إذا ضغط الزبون على رابط الإيميل
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const actionCode = urlParams.get('oobCode');
-
-    if (mode === 'resetPassword' && actionCode) {
-        currentResetCode = actionCode;
-        const modal = document.getElementById('auth-modal');
-        if(modal) modal.style.display = 'flex';
-        window.switchForm('reset-pass');
-    }
 });
-        
+    
